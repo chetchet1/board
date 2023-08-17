@@ -10,6 +10,7 @@ pipeline {
             TIME_ZONE = 'Asia/Seoul'
             PROFILE = 'local'
             AWS_CREDENTIAL_NAME = 'aws-key'
+            REGION="ap-northeast-2"
             ECR_PATH = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com'
             IMAGE_NAME = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board'
             REGION = 'ap-northeast-2'
@@ -46,7 +47,7 @@ pipeline {
                     steps {
                         script{
 
-                            docker.withRegistry("https://${ecrUrl}", "ecr:${region}:${AWS_CREDENTIAL_NAME}") {
+                            docker.withRegistry("https://${ecrUrl}", "ecr:$REGION:$AWS_CREDENTIAL_NAME") {
                               docker.image("$IMAGE_NAME:$BUILD_NUMBER").push()
                               docker.image("$IMAGE_NAME:latest").push()
                             }
