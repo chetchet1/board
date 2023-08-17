@@ -3,7 +3,6 @@ def ecrLoginHelper="docker-credential-ecr-login"
 def region="ap-northeast-2"
 def ecrUrl="598552988151.dkr.ecr.ap-northeast-2.amazonaws.com"
 def repository="board"
-def deployHost="43.201.70.137"
 def AWS_CREDENTIAL_NAME="aws-key"
 pipeline {
     agent any
@@ -14,6 +13,7 @@ pipeline {
             ECR_PATH = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com'
             IMAGE_NAME = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board'
             REGION = 'ap-northeast-2'
+            deployHost="43.201.70.137"
         }
     stages {
         stage('Pull Codes from Github'){
@@ -65,7 +65,7 @@ pipeline {
         stage('Deploy to AWS EC2 VM'){
              steps{
                 sshagent(credentials : ["deploy-ssh-key"]) {
-                    sh "ssh -o StrictHostKeyChecking=no ubuntu@${deployHost} \
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@43.201.70.137 \
                      'aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board}; \
                     docker run -d -p 80:8080 -t 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board:${BUILD_NUMBER};'"
                 }
