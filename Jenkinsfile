@@ -13,7 +13,6 @@ pipeline {
             REGION="ap-northeast-2"
             ECR_PATH = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com'
             IMAGE_NAME = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board'
-            REGION = 'ap-northeast-2'
             DEPLOY_Host="43.201.70.137"
         }
     stages {
