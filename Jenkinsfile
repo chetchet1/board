@@ -13,7 +13,7 @@ pipeline {
             ECR_PATH = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com'
             IMAGE_NAME = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board'
             REGION = 'ap-northeast-2'
-            deployHost="43.201.70.137"
+            DEPLOY_Host="43.201.70.137"
         }
     stages {
         stage('Pull Codes from Github'){
@@ -65,7 +65,7 @@ pipeline {
         stage('Deploy to AWS EC2 VM'){
              steps{
                 sshagent(credentials : ["deploy-ssh-key"]) {
-                    sh "ssh -o StrictHostKeyChecking=no ubuntu@43.201.70.137 \
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host \
                      'aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_PATH; \
                     docker run -d -p 80:8080 -t $IMAGE_NAME:${BUILD_NUMBER};'"
                 }
