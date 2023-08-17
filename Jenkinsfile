@@ -1,13 +1,12 @@
 def mainDir="."
 def ecrLoginHelper="docker-credential-ecr-login"
-def region="ap-northeast-1"
-def ecrUrl="598552988151.dkr.ecr.ap-northeast-1.amazonaws.com"
+def region="ap-northeast-2"
+def ecrUrl="598552988151.dkr.ecr.ap-northeast-2.amazonaws.com"
 def repository="board"
-def deployHost="54.168.148.170"
-
+def deployHost="43.201.70.137"
+def AWS_CREDENTIAL_NAME="aws-key"
 pipeline {
     agent any
-
     stages {
         stage('Pull Codes from Github'){
             steps{
@@ -19,28 +18,52 @@ pipeline {
               sh "./gradlew clean build"
             }
         }
-                stage('Build Docker Image by Jib & Push to AWS ECR Repository') {
-                    steps {
-                        withAWS(region:"${region}", credentials:"aws-key") {
-                            ecrLogin()
-                            sh """
-                                curl -O https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/0.4.0/linux-amd64/${ecrLoginHelper}
+        stage('dockerizing project by dockerfile') {
+             steps {
+                sh '''
+                   docker build -t $IMAGE_NAME:$BUILD_NUMBER .
+                   docker tag $IMAGE_NAME:$BUILD_NUMBER $IMAGE_NAME:latest
 
-                                cd ${mainDir}
-                                ./gradlew jib -Djib.to.image=${ecrUrl}/${repository}:${currentBuild.number} -Djib.console='plain'
-                            """
+                   '''
+             }
+             post {
+                   success {
+                        echo 'success dockerizing project'
+                   }
+                   failure {
+                        error 'fail dockerizing project' // exit pipeline
+                   }
+             }
+        }
+        stage('upload aws ECR') {
+                    steps {
+                        script{
+
+                            docker.withRegistry("https://${ecrUrl}", "ecr:${region}:${AWS_CREDENTIAL_NAME}") {
+                              docker.image("${ecrUrl}/${repository}:${BUILD_NUMBER}").push()
+                              docker.image("${IMAGE_NAME}:latest").push()
+                            }
+
+                        }
+                    }
+                    post {
+                        success {
+                            echo 'success upload image'
+                        }
+                        failure {
+                            error 'fail upload image' // exit pipeline
                         }
                     }
                 }
-                 stage('Deploy to AWS EC2 VM'){
-                            steps{
-                                sshagent(credentials : ["deploy-key"]) {
-                                    sh "ssh -o StrictHostKeyChecking=no ubuntu@${deployHost} \
-                                     'aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecrUrl}/${repository}; \
-                                      docker run -d -p 80:8888 -t ${ecrUrl}/${repository}:${currentBuild.number};'"
-                                }
-                            }
-                        }
+        stage('Deploy to AWS EC2 VM'){
+             steps{
+                sshagent(credentials : ["deploy-key"]) {
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@${deployHost} \
+                     'aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecrUrl}/${repository}; \
+                    docker run -d -p 80:8080 -t ${ecrUrl}/${repository}:${BUILD_NUMBER};'"
+                }
+             }
+        }
 
     }
 }
