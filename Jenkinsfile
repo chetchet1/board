@@ -41,7 +41,7 @@ pipeline {
 
                             docker.withRegistry("https://${ecrUrl}", "ecr:${region}:${AWS_CREDENTIAL_NAME}") {
                               docker.image("${ecrUrl}/${repository}:${BUILD_NUMBER}").push()
-                              docker.image("${IMAGE_NAME}:latest").push()
+                              docker.image("${ecrUrl}/${repository}:latest").push()
                             }
 
                         }
