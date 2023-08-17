@@ -7,6 +7,14 @@ def deployHost="43.201.70.137"
 def AWS_CREDENTIAL_NAME="aws-key"
 pipeline {
     agent any
+    environment {
+            TIME_ZONE = 'Asia/Seoul'
+            PROFILE = 'local'
+            AWS_CREDENTIAL_NAME = 'aws-key'
+            ECR_PATH = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com'
+            IMAGE_NAME = '598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board'
+            REGION = 'ap-northeast-2'
+        }
     stages {
         stage('Pull Codes from Github'){
             steps{
@@ -21,9 +29,8 @@ pipeline {
         stage('dockerizing project by dockerfile') {
              steps {
                 sh '''
-                   docker build -t 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board:$BUILD_NUMBER .
-                   docker tag 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board:$BUILD_NUMBER 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board:latest
-
+                   docker build -t $IMAGE_NAME:$BUILD_NUMBER .
+                   docker tag $IMAGE_NAME:$BUILD_NUMBER $IMAGE_NAME:latest
                    '''
              }
              post {
@@ -40,8 +47,8 @@ pipeline {
                         script{
 
                             docker.withRegistry("https://${ecrUrl}", "ecr:${region}:${AWS_CREDENTIAL_NAME}") {
-                              docker.image("${ecrUrl}/${repository}:${BUILD_NUMBER}").push()
-                              docker.image("${ecrUrl}/${repository}:latest").push()
+                              docker.image("$IMAGE_NAME:$BUILD_NUMBER").push()
+                              docker.image("$IMAGE_NAME:latest").push()
                             }
 
                         }
