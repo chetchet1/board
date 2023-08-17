@@ -21,8 +21,8 @@ pipeline {
         stage('dockerizing project by dockerfile') {
              steps {
                 sh '''
-                   docker build -t ${ecrUrl}/${repository}:$BUILD_NUMBER .
-                   docker tag ${ecrUrl}/${repository}:$BUILD_NUMBER ${ecrUrl}/${repository}:latest
+                   docker build -t 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board:$BUILD_NUMBER .
+                   docker tag 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board:$BUILD_NUMBER 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board:latest
 
                    '''
              }
