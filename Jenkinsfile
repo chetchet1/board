@@ -21,8 +21,8 @@ pipeline {
         stage('dockerizing project by dockerfile') {
              steps {
                 sh '''
-                   docker build -t $IMAGE_NAME:$BUILD_NUMBER .
-                   docker tag $IMAGE_NAME:$BUILD_NUMBER $IMAGE_NAME:latest
+                   docker build -t ${ecrUrl}/${repository}:$BUILD_NUMBER .
+                   docker tag ${ecrUrl}/${repository}:$BUILD_NUMBER ${ecrUrl}/${repository}:latest
 
                    '''
              }
