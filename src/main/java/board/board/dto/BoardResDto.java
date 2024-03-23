@@ -11,7 +11,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 
-
 @ApiModel(value="BoardDto : 게시글 내용", description="게시글 내용")
 @Data
 @RedisHash("BOARD")

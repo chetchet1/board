@@ -6,6 +6,7 @@ import java.util.List;
 import board.board.dto.BoardReqDto;
 import board.board.dto.BoardResDto;
 //import board.board.repository.BoardRepository;
+import board.board.repository.BoardRepository;
 import board.board.service.JpaBoardService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class RestBoardApiController {
 	private JpaBoardService boardService;
 
 	@Autowired
-	//BoardRepository boardRepository;
+	BoardRepository boardRepository;
 
 	@ApiOperation(value = "게시글 목록 조회")
 	@RequestMapping(value="/api/board", method=RequestMethod.GET)
@@ -50,23 +51,21 @@ public class RestBoardApiController {
 			@ApiResponse(code = 404, message = "Not found, the specified id does not exist."),
 			@ApiResponse(code = 422, message = "Unprocessable entity, input parameters caused the processing to fails. See response message for more information.")
 	})
-
-
 	@RequestMapping(value="/api/board/{boardIdx}", method=RequestMethod.GET)
-	@Cacheable(key = "#boardIdx", value ="BOARD")
+	//@Cacheable(key = "#boardIdx", value ="BOARD")
 	public BoardResDto openBoardDetail(@PathVariable("boardIdx") @ApiParam(value="게시글 번호") int boardIdx) throws Exception{//BoardResDto boardResDto = boardRepository.findById(boardIdx).get();
-//		BoardResDto boardResDto = null;
-//		try {
-//			boardResDto = boardRepository.findById(boardIdx).get();
-//		} catch (Exception e){}
-//
-//		if(boardResDto ==null){
-//			boardResDto = boardService.selectBoardDetail(boardIdx);
-//			boardRepository.save(boardResDto);
-//		}
-//		return boardResDto;
+		BoardResDto boardResDto = null;
+		try {
+			boardResDto = boardRepository.findById(boardIdx).get();
+		} catch (Exception e){}
 
-		return boardService.selectBoardDetail(boardIdx);
+		if(boardResDto ==null){
+			boardResDto = boardService.selectBoardDetail(boardIdx);
+			boardRepository.save(boardResDto);
+		}
+		return boardResDto;
+
+		//return boardService.selectBoardDetail(boardIdx);
 	}
 
 	@ApiOperation(value = "게시글 상세 내용 수정")
