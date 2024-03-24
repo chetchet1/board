@@ -70,14 +70,14 @@ public class RestBoardApiController {
 
 	@ApiOperation(value = "게시글 상세 내용 수정")
 	@RequestMapping(value="/api/board/{boardIdx}", method=RequestMethod.PUT)
-	@CachePut(key = "#boardIdx", value ="BOARD")
+	//@CachePut(key = "#boardIdx", value ="BOARD")
 	public void updateBoard(@RequestBody BoardReqDto board,MultipartHttpServletRequest multipartHttpServletRequest) throws Exception{
 		boardService.saveBoard(board,multipartHttpServletRequest);
 	}
 
 	@ApiOperation(value = "게시글 삭제")
 	@RequestMapping(value="/api/board/{boardIdx}", method=RequestMethod.DELETE)
-	@CacheEvict(key = "#boardIdx", value ="BOARD")
+	//@CacheEvict(key = "#boardIdx", value ="BOARD")
 	public void deleteBoard(@PathVariable("boardIdx") @ApiParam(value="게시글 번호") int boardIdx) throws Exception{
 		boardService.deleteBoard(boardIdx);
 	}
