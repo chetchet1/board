@@ -59,7 +59,7 @@ pipeline {
                 }
         stage('Deploy to AWS EC2 VM'){
              steps{
-                sshagent(credentials : [$DEPLOY_CREDENTIAL_NAME]) {
+                sshagent(credentials : ['deploy-ssh-key']) {
                     sh "ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host \
                      'aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_PATH; \
                     docker run -d -p 80:8080 -t $IMAGE_NAME:${BUILD_NUMBER};'"
