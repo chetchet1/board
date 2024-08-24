@@ -23,13 +23,15 @@ public class LoggerAspect {
 			type = "Controller  \t:  ";
 		}
 		else if (name.indexOf("Service") > -1) {
-			type = "ServiceImpl  \t:  ";
+			type = "Service  \t:  ";
 		}
 		else if (name.indexOf("Mapper") > -1) {
 			type = "Mapper  \t\t:  ";
 		}
-		log.debug(type + name + "." + joinPoint.getSignature().getName() + "()");
-		return joinPoint.proceed();
+		log.debug(type + name + "." + joinPoint.getSignature().getName() + "start");
+		Object object = joinPoint.proceed();
+		log.debug(type + name + "." + joinPoint.getSignature().getName() + "end");
+		return object;
 	}
 	@AfterThrowing(pointcut = "execution(* board..service.*Impl.*(..))", throwing = "exception")
 	public void afterThrowingAdvice(JoinPoint joinPoint, DataAccessException exception) {

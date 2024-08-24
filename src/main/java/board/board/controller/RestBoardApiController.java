@@ -52,17 +52,17 @@ public class RestBoardApiController {
 			@ApiResponse(code = 422, message = "Unprocessable entity, input parameters caused the processing to fails. See response message for more information.")
 	})
 	@RequestMapping(value="/api/board/{boardIdx}", method=RequestMethod.GET)
-	//@Cacheable(key = "#boardIdx", value ="BOARD")
+	@Cacheable(key = "#boardIdx", value ="BOARD")
 	public BoardResDto openBoardDetail(@PathVariable("boardIdx") @ApiParam(value="게시글 번호") int boardIdx) throws Exception{//BoardResDto boardResDto = boardRepository.findById(boardIdx).get();
 		BoardResDto boardResDto = null;
-		try {
-			boardResDto = boardRepository.findById(boardIdx).get();
-		} catch (Exception e){}
-
-		if(boardResDto ==null){
+//		try {
+//			boardResDto = boardRepository.findById(boardIdx).get();
+//		} catch (Exception e){}
+//
+//		if(boardResDto ==null){
 			boardResDto = boardService.selectBoardDetail(boardIdx);
-			boardRepository.save(boardResDto);
-		}
+//			boardRepository.save(boardResDto);
+//		}
 		return boardResDto;
 
 		//return boardService.selectBoardDetail(boardIdx);

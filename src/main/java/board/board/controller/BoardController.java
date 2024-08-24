@@ -10,6 +10,7 @@ import board.board.dto.BoardFileDto;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +24,8 @@ import board.board.service.BoardService;
 public class BoardController {
 	
 	@Autowired
-	private BoardService boardService; 
+	private BoardService boardService;  //BoardServiceProxy
+
 	
 	@RequestMapping("/board/openBoardList.do")
 	public ModelAndView openBoardList() throws Exception{

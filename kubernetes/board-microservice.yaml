@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: board
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: board
@@ -13,8 +13,13 @@ spec:
         app: board
     spec:
       containers:
-        - name: board
-          image: 598552988151.dkr.ecr.ap-northeast-2.amazonaws.com/board:1.0
+        - name: order
+          image: 590183823453.dkr.ecr.ap-northeast-2.amazonaws.com/order:2.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+        - name: 접속통계
+          image: 590183823453.dkr.ecr.ap-northeast-2.amazonaws.com/payemnt:1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

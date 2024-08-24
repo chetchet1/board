@@ -7,9 +7,11 @@ import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfigura
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableCaching
 @EnableJpaAuditing
+@EnableTransactionManagement
 @EntityScan(
 		basePackageClasses = {Jsr310JpaConverters.class},
 		basePackages = {"board"})
