@@ -69,7 +69,7 @@ pipeline {
 
             stage('Deploy to AWS EC2 VM') {
                 steps {
-                    sshagent(credentials: [$DEPLOY_CREDENTIAL_NAME]) {
+                    sshagent(credentials: $DEPLOY_CREDENTIAL_NAME) {
                         sh '''
                         echo "Checking SSH agent status..."
                         ssh-add -l  # This will list the identities added to the agent, useful for debugging
