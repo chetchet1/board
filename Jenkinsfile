@@ -69,6 +69,13 @@ pipeline {
 
         stage('Deploy to AWS EC2 VM') {
             steps {
+                // SSH 에이전트 상태를 먼저 확인
+                sh '''
+                    echo "Checking SSH agent status outside of sshagent block..."
+                    ssh-add -l || echo "No identities loaded in ssh-agent"
+                '''
+
+                // 이후에 sshagent 블록 실행
                 sshagent(['deploy-ssh-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
