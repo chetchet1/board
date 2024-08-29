@@ -69,7 +69,15 @@ pipeline {
 
             stage('Deploy to AWS EC2 VM') {
                 steps {
-                    echo "DEPLOY_HOST: $DEPLOY_Host"
+                    echo "TIME_ZONE: $TIME_ZONE"
+                    echo "PROFILE: $PROFILE"
+                    echo "AWS_CREDENTIAL_NAME: $AWS_CREDENTIAL_NAME"
+                    echo "DEPLOY_CREDENTIAL_NAME: $DEPLOY_CREDENTIAL_NAME"
+                    echo "REGION: $REGION"
+                    echo "ECR_PATH: $ECR_PATH"
+                    echo "IMAGE_NAME: $IMAGE_NAME"
+                    echo "DEPLOY_Host: $DEPLOY_Host"
+
                     sshagent(credentials: ['deploy-ssh-key']) {
                         sh '''
                         echo "Checking SSH agent status..."
