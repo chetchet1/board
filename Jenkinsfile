@@ -69,28 +69,23 @@ pipeline {
 
             stage('Deploy to AWS EC2 VM') {
                 steps {
-                    echo "TIME_ZONE: $TIME_ZONE"
-                    echo "PROFILE: $PROFILE"
-                    echo "AWS_CREDENTIAL_NAME: $AWS_CREDENTIAL_NAME"
-                    echo "DEPLOY_CREDENTIAL_NAME: $DEPLOY_CREDENTIAL_NAME"
-                    echo "REGION: $REGION"
-                    echo "ECR_PATH: $ECR_PATH"
-                    echo "IMAGE_NAME: $IMAGE_NAME"
-                    echo "DEPLOY_Host: $DEPLOY_Host"
-
-                    sshagent(credentials: ['deploy-ssh-key']) {
-                        echo "Checking SSH agent status..."
+                    withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
+                        sh '''
+                            eval $(ssh-agent -s)
+                            ssh-add $privateKey || echo "Failed to add identity"
+                            ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
+                            aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
+                            docker pull $IMAGE_NAME:$BUILD_NUMBER
+                            docker rm -f existing_container || true
+                            docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
+                            EOF
+                        '''
                     }
                 }
             }
-
     }
 }
 
-//                         ssh-add -l  # This will list the identities added to the agent, useful for debugging
-//                         ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
-//                         aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
-//                         docker pull $IMAGE_NAME:$BUILD_NUMBER
-//                         docker rm -f existing_container || true
-//                         docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
-//                         EOF
+
+
+// withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
