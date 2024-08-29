@@ -67,22 +67,23 @@ pipeline {
 //              }
 //         }
 
-            stage('Deploy to AWS EC2 VM') {
-                steps {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
-                        sh '''
-                            eval $(ssh-agent -s)
-                            ssh-add $privateKey || echo "Failed to add identity"
-                            ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
-                            aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
-                            docker pull $IMAGE_NAME:$BUILD_NUMBER
-                            docker rm -f existing_container || true
-                            docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
-                            EOF
-                        '''
-                    }
+        stage('Deploy to AWS EC2 VM') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
+                    sh '''
+                        eval $(ssh-agent -s)
+                        chmod 600 $privateKey  # Ensure the private key has the correct permissions
+                        ssh-add $privateKey || echo "Failed to add identity"
+                        ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
+                        aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
+                        docker pull $IMAGE_NAME:$BUILD_NUMBER
+                        docker rm -f existing_container || true
+                        docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
+                        EOF
+                    '''
                 }
             }
+        }
     }
 }
 
