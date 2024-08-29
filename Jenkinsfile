@@ -68,8 +68,8 @@ pipeline {
 //         }
 
             stage('Deploy to AWS EC2 VM') {
-                echo "DEPLOY_HOST: $DEPLOY_Host"
                 steps {
+                    echo "DEPLOY_HOST: $DEPLOY_Host"
                     sshagent(credentials: ['deploy-ssh-key']) {
                         sh '''
                         echo "Checking SSH agent status..."
