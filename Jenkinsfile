@@ -57,15 +57,32 @@ pipeline {
                         }
                     }
                 }
-        stage('Deploy to AWS EC2 VM'){
-             steps{
-                sshagent(credentials : ['deploy-ssh-key']) {
-                    sh "ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host \
-                     'aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_PATH; \
-                    docker run -d -p 80:8080 -t $IMAGE_NAME:${BUILD_NUMBER};'"
+//         stage('Deploy to AWS EC2 VM'){
+//              steps{
+//                 sshagent(credentials : ['deploy-ssh-key']) {
+//                     sh "ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host \
+//                      'aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_PATH; \
+//                     docker run -d -p 80:8080 -t $IMAGE_NAME:${BUILD_NUMBER};'"
+//                 }
+//              }
+//         }
+
+            stage('Deploy to AWS EC2 VM') {
+                steps {
+                    sshagent(credentials: ['deploy-ssh-key']) {
+                        sh '''
+                        echo "Checking SSH agent status..."
+                        ssh-add -l  # This will list the identities added to the agent, useful for debugging
+                        ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
+                        aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
+                        docker pull $IMAGE_NAME:$BUILD_NUMBER
+                        docker rm -f existing_container || true
+                        docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
+                        EOF
+                        '''
+                    }
                 }
-             }
-        }
+            }
 
     }
 }
