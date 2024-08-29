@@ -69,11 +69,8 @@ pipeline {
 
         stage('Deploy to AWS EC2 VM') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
+                sshagent(['deploy-ssh-key']) {
                     sh '''
-                        eval $(ssh-agent -s)
-                        chmod 600 $privateKey  # Ensure the private key has the correct permissions
-                        ssh-add $privateKey || echo "Failed to add identity"
                         ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
                         aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
                         docker pull $IMAGE_NAME:$BUILD_NUMBER
@@ -84,9 +81,7 @@ pipeline {
                 }
             }
         }
+
     }
 }
 
-
-
-// withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
