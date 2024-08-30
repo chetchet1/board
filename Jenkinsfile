@@ -49,7 +49,7 @@ pipeline {
                             eval $(ssh-agent -s)
                             ssh-add "$privateKey" || echo "Failed to add identity"
                             ssh-add -l || echo "Failed to list identities after adding"
-                            ssh -v -o IdentitiesOnly=yes -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
+                            ssh -v -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
                             aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
                             docker pull $IMAGE_NAME:$BUILD_NUMBER
                             docker rm -f existing_container || true
