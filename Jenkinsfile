@@ -41,18 +41,17 @@ pipeline {
                 withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
                     script {
                         sh '''
-                            C:/Program\\ Files/Git/bin/bash.exe -c '
+                            C:/Program\\ Files/Git/bin/bash.exe -c
+                            '
                             echo "Private key path: $privateKey"
                             chmod 600 "$privateKey" || echo "Failed to chmod"
                             ls -l "$privateKey"
                             eval $(ssh-agent -s)
                             ssh-add "$privateKey" || echo "Failed to add identity"
                             ssh-add -l || echo "Failed to list identities after adding"
-                            ssh -v -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host <<-EOF
+                            ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host <<-EOF
                                 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
-                                docker stop existing_container || true
-                                docker rm existing_container || true
-                                docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
+                                docker run- d -p 80:8080 -t $IMAGE_NAME:${BUILD_NUMBER}
                             EOF
                             '
                         '''
