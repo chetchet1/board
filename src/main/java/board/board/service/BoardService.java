@@ -4,9 +4,11 @@ import java.util.List;
 
 import board.board.dto.BoardFileDto;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.stereotype.Service;
 
 import board.board.dto.BoardDto;
 
+@Service
 public interface BoardService {
 	
 	List<BoardDto> selectBoardList() throws Exception;
