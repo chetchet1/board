@@ -42,10 +42,21 @@ pipeline {
                     script {
                         // Git Bash를 사용하여 권한을 설정하고 SSH 명령어를 실행
                         sh '''
+                            C:/Program\\ Files/Git/bin/bash.exe -c '
                             echo "Private key path: $privateKey"
-                            # Print the contents of the directory to see if the private key is listed
-                            C:/Program\\ Files/Git/bin/bash.exe -c 'ls -l $(dirname "$privateKey")'
-                            C:/Program\\ Files/Git/bin/bash.exe -c 'cat "$privateKey"'
+                            chmod 600 "$privateKey" || echo "Failed to chmod"
+                            ls -l "$privateKey"
+                            eval $(ssh-agent -s)
+                            ssh-add -l || echo "Failed to list identities"
+                            ssh-add "$privateKey" || echo "Failed to add identity"
+                            ssh-add -l || echo "Failed to list identities after adding"
+                            ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
+                            aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
+                            docker pull $IMAGE_NAME:$BUILD_NUMBER
+                            docker rm -f existing_container || true
+                            docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
+                            EOF
+                            '
                         '''
                     }
                 }
@@ -53,18 +64,3 @@ pipeline {
         }
     }
 }
-// C:/Program\\ Files/Git/bin/bash.exe -c '
-//                             echo "Private key path: $privateKey"
-//                             ls -l "$privateKey"
-//                             chmod 600 "$privateKey" || echo "Failed to chmod"
-//                             eval $(ssh-agent -s)
-//                             ssh-add -l || echo "Failed to list identities"
-//                             ssh-add "$privateKey" || echo "Failed to add identity"
-//                             ssh-add -l || echo "Failed to list identities after adding"
-//                             ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
-//                             aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
-//                             docker pull $IMAGE_NAME:$BUILD_NUMBER
-//                             docker rm -f existing_container || true
-//                             docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
-//                             EOF
-//                             '
