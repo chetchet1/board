@@ -23,8 +23,8 @@ public class TransactionAspect {
 	
 	@Autowired
 	private PlatformTransactionManager transactionManager;
-	
-	@Bean
+
+	@Bean(name = "customTransactionInterceptor")
 	public TransactionInterceptor transactionAdvice(){
 		MatchAlwaysTransactionAttributeSource source = new MatchAlwaysTransactionAttributeSource();
 		RuleBasedTransactionAttribute transactionAttribute = new RuleBasedTransactionAttribute();
