@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		basePackageClasses = {Jsr310JpaConverters.class},
 		basePackages = {"board"})
 @SpringBootApplication(exclude={MultipartAutoConfiguration.class})
-@ComponentScan(basePackages = "board.board")
 public class BoardApplication {
 
 	public static void main(String[] args) {
