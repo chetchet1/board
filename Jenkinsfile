@@ -51,8 +51,6 @@ pipeline {
                             ssh-add -l || echo "Failed to list identities after adding"
                             ssh -v -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
                             aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
-                            docker pull $IMAGE_NAME:$BUILD_NUMBER
-                            docker rm -f existing_container || true
                             docker run -d -p 80:8080 --name existing_container $IMAGE_NAME:${BUILD_NUMBER}
                             EOF
                             '
