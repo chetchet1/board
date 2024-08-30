@@ -18,12 +18,12 @@ pipeline {
         }
         stage('Build Codes by Gradle') {
             steps {
-                sh "C:/Program Files/Git/bin/bash.exe -c './gradlew clean build'"
+                sh "C:/Program\\ Files/Git/bin/bash.exe -c './gradlew clean build'"
             }
         }
         stage('dockerizing project by dockerfile') {
             steps {
-                sh "C:/Program Files/Git/bin/bash.exe -c 'docker build -t $IMAGE_NAME:$BUILD_NUMBER . && docker tag $IMAGE_NAME:$BUILD_NUMBER $IMAGE_NAME:latest'"
+                sh "C:/Program\\ Files/Git/bin/bash.exe -c 'docker build -t $IMAGE_NAME:$BUILD_NUMBER . && docker tag $IMAGE_NAME:$BUILD_NUMBER $IMAGE_NAME:latest'"
             }
         }
         stage('upload aws ECR') {
@@ -42,7 +42,7 @@ pipeline {
                     script {
                         // Git Bash를 사용하여 권한을 설정하고 SSH 명령어를 실행
                         sh '''
-                            C:/Program Files/Git/bin/bash.exe -c '
+                            C:/Program\\ Files/Git/bin/bash.exe -c '
                             chmod 600 "$privateKey" || echo "Failed to chmod"
                             eval $(ssh-agent -s)
                             ssh-add "$privateKey" || echo "Failed to add identity"
