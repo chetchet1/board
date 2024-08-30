@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import board.board.dto.BoardDto;
 
-@Service
 public interface BoardService {
 	
 	List<BoardDto> selectBoardList() throws Exception;

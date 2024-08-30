@@ -19,7 +19,7 @@ import board.board.mapper.BoardMapper;
 import board.common.FileUtils;
 
 
-
+@Service
 public class BoardServiceImpl implements BoardService{
 
 	@Autowired
