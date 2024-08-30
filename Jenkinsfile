@@ -41,8 +41,7 @@ pipeline {
                 withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
                     script {
                         sh '''
-                            C:/Program\\ Files/Git/bin/bash.exe -c
-                            '
+                            C:/Program\\ Files/Git/bin/bash.exe -c'
                             echo "Private key path: $privateKey"
                             chmod 600 "$privateKey" || echo "Failed to chmod"
                             ls -l "$privateKey"
