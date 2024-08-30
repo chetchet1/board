@@ -69,16 +69,12 @@ pipeline {
 
         stage('Deploy to AWS EC2 VM') {
             steps {
-                // SSH 에이전트 상태를 먼저 확인
-                sh '''
-                    echo "Checking SSH agent status outside of sshagent block..."
-                    ssh-add -l || echo "No identities loaded in ssh-agent"
-                '''
-
-                // 이후에 sshagent 블록 실행
-                sshagent(['deploy-ssh-key']) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key', keyFileVariable: 'privateKey')]) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
+                        eval $(ssh-agent -s)
+                        chmod 600 $privateKey || echo "Failed to chmod"
+                        ssh-add $privateKey || echo "Failed to add identity"
+                        ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no ubuntu@$DEPLOY_Host << EOF
                         aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_PATH
                         docker pull $IMAGE_NAME:$BUILD_NUMBER
                         docker rm -f existing_container || true
