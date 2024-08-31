@@ -4,11 +4,11 @@ pipeline {
         TIME_ZONE = 'Asia/Seoul'
         PROFILE = 'local'
         AWS_CREDENTIAL_NAME = 'aws-key'
-        DEPLOY_CREDENTIAL_NAME = 'deploy-ssh-key'
+        DEPLOY_CREDENTIAL_NAMAE = 'deploy-ssh-key'
         REGION = 'ap-northeast-2'
         ECR_PATH = '339713037008.dkr.ecr.ap-northeast-2.amazonaws.com'
         IMAGE_NAME = '339713037008.dkr.ecr.ap-northeast-2.amazonaws.com/board'
-        DEPLOY_Host = '3.34.141.108'
+        DEPLOY_Host = '13.209.83.40'
     }
     stages {
         stage('Pull Codes from Github') {
